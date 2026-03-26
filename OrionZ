@@ -600,7 +600,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		BorderSizePixel = 0,
 		ZIndex = 5
 	}), {
-		MakeElement("Corner", 0, 12),
+		MakeElement("Corner", 0, 20),
 
 		SetProps(Create("UIStroke"), {
 			Name = "RainbowStroke",
