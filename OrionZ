@@ -568,14 +568,73 @@ function OrionLib:MakeWindow(WindowConfig)
 	}), {MakeElement("Corner", 0.25), SetProps(MakeElement("AspectRatio"), {DominantAxis = 0, AspectRatio = 0.986, AspectType = 1})})
 
 	MakeDraggable(MobileOpenButton, MobileOpenButton)
+local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("TextBox"), {
+    Name = "SearchBox",
+    Parent = TabHolder.Parent,
+    Size = UDim2.new(1, -16, 0, 30),
+    Position = UDim2.new(0, 8, 0, 10),
+    BackgroundColor3 = Color3.fromRGB(15, 15, 20),
+    PlaceholderText = "Search Tabs...",
+    Text = "",
+    TextColor3 = Color3.fromRGB(255, 255, 255),
+    Font = Enum.Font.GothamSemibold,
+    TextSize = 12,
+    ClearTextOnFocus = false
+}), {
+    MakeElement("Corner", 0, 6),
+    SetProps(MakeElement("Padding", 0, 10, 0, 0), {PaddingLeft = UDim.new(0, 10)})
+}), "Second")
 
+AddConnection(SearchBox:GetPropertyChangedSignal("Text"), function()
+    local Input = SearchBox.Text:lower()
+    for _, btn in pairs(TabHolder:GetChildren()) do
+        if btn:IsA("GuiButton") then
+            if btn.Text:lower():find(Input) then
+                btn.Visible = true
+            else
+                btn.Visible = false
+            end
+        end
+    end
+end)
 
-	local TabHolder = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255, 255, 255), 4), {
-		Size = UDim2.new(1, 0, 1, -50)
-	}), {
-		MakeElement("List"),
-		MakeElement("Padding", 8, 0, 0, 8)
-	}), "Divider")
+    local TabHolder = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255, 255, 255), 4), {
+        Size = UDim2.new(1, 0, 1, -50),
+        Position = UDim2.new(0, 0, 0, 50)
+    }), {
+        MakeElement("List"),
+        MakeElement("Padding", 8, 0, 0, 8)
+    }), "Divider")
+
+    local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("TextBox"), {
+        Name = "SearchBox",
+        Parent = TabHolder.Parent, 
+        Size = UDim2.new(1, -16, 0, 30),
+        Position = UDim2.new(0, 8, 0, 10),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 20),
+        PlaceholderText = "Search...",
+        Text = "",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Font = Enum.Font.GothamSemibold,
+        TextSize = 12,
+        ClearTextOnFocus = false
+    }), {
+        MakeElement("Corner", 0, 6),
+        SetProps(MakeElement("Padding", 0, 10, 0, 0), {PaddingLeft = UDim.new(0, 10)})
+    }), "Second")
+
+    AddConnection(SearchBox:GetPropertyChangedSignal("Text"), function()
+        local Input = SearchBox.Text:lower()
+        for _, btn in pairs(TabHolder:GetChildren()) do
+            if btn:IsA("GuiButton") then
+                if btn.Text:lower():find(Input) then
+                    btn.Visible = true
+                else
+                    btn.Visible = false
+                end
+            end
+        end
+    end)
 
 	AddConnection(TabHolder.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
 		TabHolder.CanvasSize = UDim2.new(0, 0, 0, TabHolder.UIListLayout.AbsoluteContentSize.Y + 16)
@@ -2471,4 +2530,3 @@ function OrionLib:Destroy()
 end
 
 return OrionLib
-
