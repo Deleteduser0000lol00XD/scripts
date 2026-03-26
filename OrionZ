@@ -592,16 +592,20 @@ function OrionLib:MakeWindow(WindowConfig)
 
 	MakeDraggable(MobileOpenButton, MobileOpenButton)
 
-	-- SearchBox
-	local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(15, 15, 20), 0, 6), {
+	local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("Frame"), {
+		Name = "SearchBoxFrame",
 		Size = UDim2.new(1, -16, 0, 30),
 		Position = UDim2.new(0, 8, 0, 10),
-		Name = "SearchBoxFrame"
+		BackgroundColor3 = Color3.fromRGB(15, 15, 20),
+		BorderSizePixel = 0
 	}), {
-		MakeElement("Padding", 0, 10, 10, 0),
+		MakeElement("Corner", 0, 6),
+
 		SetProps(MakeElement("TextBox"), {
 			Name = "Input",
-			Size = UDim2.new(1, 0, 1, 0),
+			Parent = nil,
+			Size = UDim2.new(1, -20, 1, 0),
+			Position = UDim2.new(0, 10, 0, 0),
 			BackgroundTransparency = 1,
 			PlaceholderText = "Search Tabs...",
 			Text = "",
@@ -609,17 +613,18 @@ function OrionLib:MakeWindow(WindowConfig)
 			PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
 			Font = Enum.Font.GothamSemibold,
 			TextSize = 12,
-			ClearTextOnFocus = false
+			ClearTextOnFocus = false,
+			TextXAlignment = Enum.TextXAlignment.Left
 		})
 	}), "Second")
 
-	-- TabHolder
 	local TabHolder = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255, 255, 255), 4), {
 		Size = UDim2.new(1, 0, 1, -90),
 		Position = UDim2.new(0, 0, 0, 50),
 		Name = "TabHolder",
 		BackgroundTransparency = 1,
-		ScrollingDirection = Enum.ScrollingDirection.Y
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		CanvasSize = UDim2.new(0, 0, 0, 0)
 	}), {
 		MakeElement("List"),
 		MakeElement("Padding", 8, 8, 8, 8)
@@ -629,7 +634,6 @@ function OrionLib:MakeWindow(WindowConfig)
 		TabHolder.CanvasSize = UDim2.new(0, 0, 0, TabHolder.UIListLayout.AbsoluteContentSize.Y + 16)
 	end)
 
-	-- 検索処理
 	AddConnection(SearchBox.Input:GetPropertyChangedSignal("Text"), function()
 		local Input = SearchBox.Input.Text:lower()
 
