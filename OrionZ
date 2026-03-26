@@ -24,7 +24,7 @@ local OrionLib = {
 			TextDark = Color3.fromRGB(150, 150, 150)
 		},
 
-		OrionV = {
+		OrionZ = {
 			Main = Color3.fromRGB(8, 8, 8),
 			Second = Color3.fromRGB(10, 10, 10),
 			Stroke = Color3.fromRGB(30, 30, 30),
@@ -33,7 +33,7 @@ local OrionLib = {
 			TextDark = Color3.fromRGB(128,128,128), 
 		}
 	},
-	SelectedTheme = "OrionV",
+	SelectedTheme = "OrionZ",
 	Folder = nil,
 	SaveCfg = false
 }
@@ -62,7 +62,7 @@ local Orion = Instance.new("ScreenGui")
 
 local FocusDrag = nil
 
-Orion.Name = "OrionV"
+Orion.Name = "OrionZ"
 
 getgenv().gethui = function() return game.CoreGui end
 
@@ -248,7 +248,7 @@ local function LoadCfg(Config)
 				end    
 			end)
 		else
-			warn("OrionV Library Config Loader - Could not find ", a ,b)
+			warn("OrionZ Library Config Loader - Could not find ", a ,b)
 		end
 	end)
 end
@@ -569,21 +569,23 @@ function OrionLib:MakeWindow(WindowConfig)
 
 	MakeDraggable(MobileOpenButton, MobileOpenButton)
     
+-- 1. まずは TabHolder を作成（これがないと検索対象が見つからないぜ）
     local TabHolder = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255, 255, 255), 4), {
         Size = UDim2.new(1, 0, 1, -50),
-        Position = UDim2.new(0, 0, 0, 50)
+        Position = UDim2.new(0, 0, 0, 50) -- 検索窓の高さ(50px)分、下にずらす
     }), {
         MakeElement("List"),
         MakeElement("Padding", 8, 0, 0, 8)
     }), "Divider")
 
+    -- 2. 次に SearchBox を作成（TabHolderが定義された後なので Parent = TabHolder.Parent が使える）
     local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("TextBox"), {
         Name = "ZenoSearchBox",
-        Parent = TabHolder.Parent
+        Parent = TabHolder.Parent, -- これでサイドバー(Mainの左側)に入るぜ
         Size = UDim2.new(1, -16, 0, 30),
         Position = UDim2.new(0, 8, 0, 10),
         BackgroundColor3 = Color3.fromRGB(15, 15, 20),
-        PlaceholderText = "Search...",
+        PlaceholderText = "Search Tabs...",
         Text = "",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamSemibold,
@@ -594,10 +596,13 @@ function OrionLib:MakeWindow(WindowConfig)
         SetProps(MakeElement("Padding", 0, 10, 0, 0), {PaddingLeft = UDim.new(0, 10)})
     }), "Second")
 
+    -- 3. 検索の実行ロジック
     AddConnection(SearchBox:GetPropertyChangedSignal("Text"), function()
         local Input = SearchBox.Text:lower()
         for _, btn in pairs(TabHolder:GetChildren()) do
+            -- ボタン（タブ）に対してのみ表示・非表示を切り替える
             if btn:IsA("GuiButton") or btn:IsA("TextButton") then
+                -- ボタンの名前、または中にあるTextLabelの文字で検索
                 local btnText = btn:FindFirstChild("TextLabel") and btn.TextLabel.Text or btn.Name
                 if btnText:lower():find(Input) then
                     btn.Visible = true
