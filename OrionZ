@@ -594,13 +594,13 @@ function OrionLib:MakeWindow(WindowConfig)
 
 	local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("Frame"), {
 		Name = "SearchBoxFrame",
-		Size = UDim2.new(1, -16, 0, 90),
+		Size = UDim2.new(1, -16, 0, 30),
 		Position = UDim2.new(0, 8, 0, 10),
 		BackgroundColor3 = Color3.fromRGB(15, 15, 20),
 		BorderSizePixel = 0,
 		ZIndex = 5
 	}), {
-		MakeElement("Corner", 0, 73),
+		MakeElement("Corner", 0, 13),
 
 		SetProps(Create("UIStroke"), {
 			Name = "RainbowStroke",
