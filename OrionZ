@@ -484,7 +484,7 @@ function OrionLib:MakeNotification(NotificationConfig)
         local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(8, 8, 8), 0, 10), {
             Parent = NotificationParent, 
             Size = UDim2.new(1, 0, 0, 0),
-            Position = UDim2.new(1, -55, 0, 0),
+            Position = UDim2.new(1, -80, 0, 0),
             BackgroundTransparency = 0,
             AutomaticSize = Enum.AutomaticSize.Y
         }), {
