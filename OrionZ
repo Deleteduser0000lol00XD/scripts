@@ -515,7 +515,7 @@ function OrionLib:MakeNotification(NotificationConfig)
 
         TweenService:Create(ProgressBar, TweenInfo.new(NotificationConfig.Time, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
         
-        TweenService:Create(ProgressBar, TweenInfo.new(NotificationConfig.Time, Enum.EasingLinear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+        TweenService:Create(ProgressBar, TweenInfo.new(NotificationConfig.Time, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
 
         wait(NotificationConfig.Time - 0.88)
         
