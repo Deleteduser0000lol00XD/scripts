@@ -467,13 +467,15 @@ function OrionLib:MakeNotification(NotificationConfig)
             Parent = NotificationHolder
         })
 
+        -- バーの背景（LayoutOrderを大きくして一番下に配置）
         local ProgressBarBack = SetProps(MakeElement("RoundFrame", Color3.fromRGB(40, 40, 40), 0, 10), {
-            Size = UDim2.new(1, 0, 0, 3),
-            Position = UDim2.new(0, 0, 1, 5), -- 通知のすぐ下に配置
+            Size = UDim2.new(1, 0, 0, 4), -- 少し太くしました
             BorderSizePixel = 0,
-            Name = "ProgressBarBack"
+            Name = "ProgressBarBack",
+            LayoutOrder = 10
         })
 
+        -- 動くバー
         local ProgressBar = SetProps(MakeElement("RoundFrame", Color3.fromRGB(240, 240, 240), 0, 10), {
             Size = UDim2.new(0, 0, 1, 0),
             BorderSizePixel = 0,
@@ -484,41 +486,63 @@ function OrionLib:MakeNotification(NotificationConfig)
         local NotificationFrame = SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(8, 8, 8), 0, 10), {
             Parent = NotificationParent, 
             Size = UDim2.new(1, 0, 0, 0),
-            Position = UDim2.new(1, -80, 0, 0),
+            Position = UDim2.new(1, 20, 0, 0), -- 最初は画面外（右）に配置
             BackgroundTransparency = 0,
             AutomaticSize = Enum.AutomaticSize.Y
         }), {
             MakeElement("Stroke", Color3.fromRGB(93, 93, 93), 1.2),
             MakeElement("Padding", 12, 12, 12, 12),
-            ProgressBarBack,
-            SetProps(MakeElement("Image", NotificationConfig.Image), {
-                Size = UDim2.new(0, 20, 0, 20),
-                ImageColor3 = Color3.fromRGB(240, 240, 240),
-                Name = "Icon"
+            
+            -- 要素を上から順に並べるレイアウト
+            SetProps(MakeElement("UIListLayout"), {
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 8)
             }),
-            SetProps(MakeElement("Label", NotificationConfig.Name, 15), {
-                Size = UDim2.new(1, -30, 0, 20),
-                Position = UDim2.new(0, 30, 0, 0),
-                Font = Enum.Font.GothamBold,
-                Name = "Title"
+
+            -- アイコンとタイトルを横に並べるためのコンテナ
+            SetChildren(SetProps(MakeElement("Frame"), {
+                Size = UDim2.new(1, 0, 0, 20),
+                BackgroundTransparency = 1,
+                LayoutOrder = 1
+            }), {
+                SetProps(MakeElement("Image", NotificationConfig.Image), {
+                    Size = UDim2.new(0, 20, 0, 20),
+                    ImageColor3 = Color3.fromRGB(240, 240, 240),
+                    Name = "Icon"
+                }),
+                SetProps(MakeElement("Label", NotificationConfig.Name, 15), {
+                    Size = UDim2.new(1, -30, 0, 20),
+                    Position = UDim2.new(0, 30, 0, 0),
+                    Font = Enum.Font.GothamBold,
+                    Name = "Title",
+                    TextXAlignment = Enum.TextXAlignment.Left
+                }),
             }),
+
+            -- 本文テキスト
             SetProps(MakeElement("Label", NotificationConfig.Content, 14), {
                 Size = UDim2.new(1, 0, 0, 0),
-                Position = UDim2.new(0, 0, 0, 25),
+                AutomaticSize = Enum.AutomaticSize.Y,
                 Font = Enum.Font.GothamSemibold,
                 Name = "Content",
-                AutomaticSize = Enum.AutomaticSize.Y,
                 TextColor3 = Color3.fromRGB(200, 200, 200),
-                TextWrapped = true
-            })
+                TextWrapped = true,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                LayoutOrder = 2
+            }),
+
+            ProgressBarBack -- バーを配置
         })
 
-        TweenService:Create(ProgressBar, TweenInfo.new(NotificationConfig.Time, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
-        
+        -- 登場アニメーション
+        TweenService:Create(NotificationFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+
+        -- バーのアニメーション（Timeに合わせて満タンにする）
         TweenService:Create(ProgressBar, TweenInfo.new(NotificationConfig.Time, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
 
         wait(NotificationConfig.Time - 0.88)
         
+        -- 消えるアニメーション
         TweenService:Create(NotificationFrame.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
         TweenService:Create(NotificationFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
         TweenService:Create(ProgressBarBack, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
