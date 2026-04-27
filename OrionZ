@@ -15,22 +15,13 @@ local OrionLib = {
 	Connections = {},
 	Flags = {},
 	Themes = {
-		Default = {
-			Main = Color3.fromRGB(0, 0, 0),
-			Second = Color3.fromRGB(32, 32, 32),
-			Stroke = Color3.fromRGB(60, 60, 60),
-			Divider = Color3.fromRGB(60, 60, 60),
-			Text = Color3.fromRGB(240, 240, 240),
-			TextDark = Color3.fromRGB(150, 150, 150)
-		},
-
 		OrionZ = {
 			Main = Color3.fromRGB(8, 8, 8),
 			Second = Color3.fromRGB(10, 10, 10),
 			Stroke = Color3.fromRGB(30, 30, 30),
 			Divider = Color3.fromRGB(30, 30, 30),
 			Text = Color3.fromRGB(128, 128, 128),
-			TextDark = Color3.fromRGB(128,128,128), 
+			TextDark = Color3.fromRGB(128,128,128)
 		}
 	},
 	SelectedTheme = "OrionZ",
@@ -717,7 +708,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		WindowConfig.IntroEnabled = true
 	end
 	WindowConfig.FreeMouse = WindowConfig.FreeMouse or false
-	WindowConfig.KeyToOpenWindow = WindowConfig.KeyToOpenWindow or "RightControl"
+	WindowConfig.KeyToOpenWindow = WindowConfig.KeyToOpenWindow or "K"
 	WindowConfig.IntroText = WindowConfig.IntroText or "OrionZ Library"
 	WindowConfig.CloseCallback = WindowConfig.CloseCallback or function() end
 	WindowConfig.ShowIcon = WindowConfig.ShowIcon or false
@@ -945,13 +936,14 @@ local WindowName = AddThemeObject(SetProps(MakeElement("Label", "", 14), {
 local targetText = WindowConfig.Name
 local currentCharIndex = 1
 local isDeleting = false
+local isRestoring = false
 local typingSpeed = 0.1
 local pauseTime = 2
 local animationComplete = false
 
 local function TypeAnimation()
 	while not animationComplete do
-		if not isDeleting then
+		if not isDeleting and not isRestoring then
 			if currentCharIndex <= #targetText then
 				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
 				currentCharIndex = currentCharIndex + 1
@@ -961,13 +953,27 @@ local function TypeAnimation()
 				wait(pauseTime)
 				isDeleting = true
 			end
-		else
+			
+		elseif isDeleting then
 			if currentCharIndex > 1 then
 				currentCharIndex = currentCharIndex - 1
 				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
 				wait(typingSpeed / 1.5)
 			else
 				WindowName.Text = "|"
+				isDeleting = false
+				isRestoring = true
+				currentCharIndex = 1
+				wait(0.3)
+			end
+			
+		elseif isRestoring then
+			if currentCharIndex <= #targetText then
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
+				currentCharIndex = currentCharIndex + 1
+				wait(typingSpeed)
+			else
+				WindowName.Text = targetText
 				animationComplete = true
 			end
 		end
@@ -2122,7 +2128,7 @@ spawn(TypeAnimation)
                             Font = Enum.Font.Gotham,
                             Name = "Selected",
                             TextXAlignment = Enum.TextXAlignment.Right,
-                            TextTruncate = Enum.TextTruncate.AtEnd -- 名前が長い場合に...で省略
+                            TextTruncate = Enum.TextTruncate.AtEnd
                         }), "TextDark"),
                         AddThemeObject(SetProps(MakeElement("Frame"), {
                             Size = UDim2.new(1, 0, 0, 1),
@@ -2201,7 +2207,7 @@ spawn(TypeAnimation)
                     if #selectedNames > 0 then
                         DropdownFrame.F.Selected.Text = table.concat(selectedNames, ", ")
                     else
-                        DropdownFrame.F.Selected.Text = "None"
+                        DropdownFrame.F.Selected.Text = "unknown"
                     end
                 end
 
