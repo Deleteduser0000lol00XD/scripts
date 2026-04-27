@@ -764,57 +764,51 @@ function OrionLib:MakeWindow(WindowConfig)
 	MakeDraggable(MobileOpenButton, MobileOpenButton)
 
 	local SearchBox = AddThemeObject(SetChildren(SetProps(MakeElement("Frame"), {
-		Name = "SearchBoxFrame",
-		Size = UDim2.new(1, -16, 0, 30),
-		Position = UDim2.new(0, 8, 0, 10),
-		BackgroundColor3 = Color3.fromRGB(15, 15, 20),
-		BorderSizePixel = 0,
-		ZIndex = 5
-	}), {
-		MakeElement("Corner", 0, 13),
+        Name = "SearchBoxFrame",
+        Size = UDim2.new(1, -16, 0, 30),
+        Position = UDim2.new(0, 8, 0, 10),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 20),
+        BorderSizePixel = 0,
+        ZIndex = 5
+    }), {
+        MakeElement("Corner", 0, 13),
 
-		SetProps(Create("UIStroke"), {
-			Name = "RainbowStroke",
-			Color = Color3.fromRGB(255, 255, 255),
-			Thickness = 1.5,
-			Transparency = 0,
-			ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		}),
+        SetProps(Create("UIStroke"), {
+            Name = "SearchStroke",
+            Color = Color3.fromRGB(100, 100, 100),
+            Thickness = 1.5,
+            Transparency = 0,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        }),
 
-		SetProps(MakeElement("TextBox"), {
-			Name = "Input",
-			Size = UDim2.new(1, -20, 1, 0),
-			Position = UDim2.new(0, 10, 0, 0),
-			BackgroundTransparency = 1,
-			PlaceholderText = "Search...",
-			Text = "",
-			TextColor3 = Color3.fromRGB(255, 255, 255),
-			PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
-			Font = Enum.Font.GothamSemibold,
-			TextSize = 12,
-			ClearTextOnFocus = false,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			ZIndex = 6
-		})
-	}), "Second")
+        SetProps(MakeElement("TextBox"), {
+            Name = "Input",
+            Size = UDim2.new(1, -20, 1, 0),
+            Position = UDim2.new(0, 10, 0, 0),
+            BackgroundTransparency = 1,
+            PlaceholderText = "Search...",
+            Text = "",
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
+            Font = Enum.Font.GothamSemibold,
+            TextSize = 12,
+            ClearTextOnFocus = false,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 6
+        })
+    }), "Second")
 
-	AddConnection(RunService.RenderStepped, function()
-		if SearchBox and SearchBox:FindFirstChild("RainbowStroke") then
-			SearchBox.RainbowStroke.Color = Color3.fromHSV((tick() * 0.15) % 1, 1, 1)
-		end
-	end)
-
-	local TabHolder = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255, 255, 255), 4), {
-		Size = UDim2.new(1, 0, 1, -90),
-		Position = UDim2.new(0, 0, 0, 35),
-		Name = "TabHolder",
-		BackgroundTransparency = 1,
-		ScrollingDirection = Enum.ScrollingDirection.Y,
-		CanvasSize = UDim2.new(0, 0, 0, 0)
-	}), {
-		MakeElement("List"),
-		MakeElement("Padding", 8, 8, 8, 8)
-	}), "Divider")
+    local TabHolder = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255, 255, 255), 4), {
+        Size = UDim2.new(1, 0, 1, -90),
+        Position = UDim2.new(0, 0, 0, 35),
+        Name = "TabHolder",
+        BackgroundTransparency = 1,
+        ScrollingDirection = Enum.ScrollingDirection.Y,
+        CanvasSize = UDim2.new(0, 0, 0, 0)
+    }), {
+        MakeElement("List"),
+        MakeElement("Padding", 8, 8, 8, 8)
+    }), "Divider")
 
 	AddConnection(TabHolder.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
 		TabHolder.CanvasSize = UDim2.new(0, 0, 0, TabHolder.UIListLayout.AbsoluteContentSize.Y + 16)
@@ -940,43 +934,23 @@ function OrionLib:MakeWindow(WindowConfig)
 		}),
 	}), "Second")
 
-local WindowName = AddThemeObject(SetProps(MakeElement("Label", "", 14), {
-	Size = UDim2.new(1, -30, 2, 0),
-	Position = UDim2.new(0, 25, 0, -24),
-	Font = Enum.Font.GothamBlack,
-	TextSize = 20
+llocal WindowName = AddThemeObject(SetProps(MakeElement("Label", "", 14), {
+    Size = UDim2.new(1, -30, 2, 0),
+    Position = UDim2.new(0, 25, 0, -24),
+    Font = Enum.Font.GothamBlack,
+    TextSize = 20
 }), "Text")
 
 local targetText = WindowConfig.Name
-local currentCharIndex = 1
-local isDeleting = false
 local typingSpeed = 0.1
-local pauseTime = 2
 
 local function TypeAnimation()
-	while true do
-		if not isDeleting then
-			if currentCharIndex <= #targetText then
-				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
-				currentCharIndex = currentCharIndex + 1
-				wait(typingSpeed)
-			else
-				WindowName.Text = targetText .. "|"
-				wait(pauseTime)
-				isDeleting = true
-			end
-		else
-			if currentCharIndex > 1 then
-				currentCharIndex = currentCharIndex - 1
-				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
-				wait(typingSpeed / 1.5)
-			else
-				WindowName.Text = "|"
-				isDeleting = false
-				wait(0.5)
-			end
-		end
-	end
+    for i = 1, #targetText do
+        WindowName.Text = string.sub(targetText, 1, i) .. "|"
+        wait(typingSpeed)
+    end
+    
+    WindowName.Text = targetText
 end
 
 spawn(TypeAnimation)
