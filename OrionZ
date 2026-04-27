@@ -947,9 +947,9 @@ local typingSpeed = 0.1
 local function TypeAnimation()
     for i = 1, #targetText do
         WindowName.Text = string.sub(targetText, 1, i) .. "|"
-        wait(typingSpeed)
+        task.wait(typingSpeed)
     end
-    
+
     WindowName.Text = targetText
 end
 
