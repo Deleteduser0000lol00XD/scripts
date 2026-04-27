@@ -16,12 +16,12 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		OrionZ = {
-			Main = Color3.fromRGB(8, 8, 8),
-			Second = Color3.fromRGB(10, 10, 10),
+			Main = Color3.fromRGB(0, 0, 0),
+			Second = Color3.fromRGB(28, 27, 27),
 			Stroke = Color3.fromRGB(30, 30, 30),
 			Divider = Color3.fromRGB(30, 30, 30),
-			Text = Color3.fromRGB(128, 128, 128),
-			TextDark = Color3.fromRGB(128,128,128)
+			Text = Color3.fromRGB(84, 84, 84),
+			TextDark = Color3.fromRGB(84, 84, 84)
 		}
 	},
 	SelectedTheme = "OrionZ",
@@ -945,11 +945,11 @@ local function TypeAnimation()
 	while not animationComplete do
 		if not isDeleting and not isRestoring then
 			if currentCharIndex <= #targetText then
-				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. ""
 				currentCharIndex = currentCharIndex + 1
 				wait(typingSpeed)
 			else
-				WindowName.Text = targetText .. "|"
+				WindowName.Text = targetText .. ""
 				wait(pauseTime)
 				isDeleting = true
 			end
@@ -957,10 +957,10 @@ local function TypeAnimation()
 		elseif isDeleting then
 			if currentCharIndex > 1 then
 				currentCharIndex = currentCharIndex - 1
-				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. ""
 				wait(typingSpeed / 1.5)
 			else
-				WindowName.Text = "|"
+				WindowName.Text = ""
 				isDeleting = false
 				isRestoring = true
 				currentCharIndex = 1
@@ -969,7 +969,7 @@ local function TypeAnimation()
 			
 		elseif isRestoring then
 			if currentCharIndex <= #targetText then
-				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. ""
 				currentCharIndex = currentCharIndex + 1
 				wait(typingSpeed)
 			else
