@@ -934,26 +934,47 @@ function OrionLib:MakeWindow(WindowConfig)
 		}),
 	}), "Second")
 
+
 local WindowName = AddThemeObject(SetProps(MakeElement("Label", "", 14), {
-    Size = UDim2.new(1, -30, 2, 0),
-    Position = UDim2.new(0, 25, 0, -24),
-    Font = Enum.Font.GothamBlack,
-    TextSize = 20
+	Size = UDim2.new(1, -30, 2, 0),
+	Position = UDim2.new(0, 25, 0, -24),
+	Font = Enum.Font.GothamBlack,
+	TextSize = 20
 }), "Text")
 
 local targetText = WindowConfig.Name
+local currentCharIndex = 1
+local isDeleting = false
 local typingSpeed = 0.1
+local pauseTime = 2
+local animationComplete = false
 
 local function TypeAnimation()
-    for i = 1, #targetText do
-        WindowName.Text = string.sub(targetText, 1, i) .. "|"
-        task.wait(typingSpeed)
-    end
-    
-    WindowName.Text = targetText
+	while not animationComplete do
+		if not isDeleting then
+			if currentCharIndex <= #targetText then
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
+				currentCharIndex = currentCharIndex + 1
+				wait(typingSpeed)
+			else
+				WindowName.Text = targetText .. "|"
+				wait(pauseTime)
+				isDeleting = true
+			end
+		else
+			if currentCharIndex > 1 then
+				currentCharIndex = currentCharIndex - 1
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. "|"
+				wait(typingSpeed / 1.5)
+			else
+				WindowName.Text = "|"
+				animationComplete = true
+			end
+		end
+	end
 end
 
-task.spawn(TypeAnimation)
+spawn(TypeAnimation)
 
 	local WindowTopBarLine = AddThemeObject(SetProps(MakeElement("Frame"), {
 		Size = UDim2.new(1, 0, 0, 1),
