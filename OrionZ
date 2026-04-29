@@ -2752,18 +2752,12 @@ spawn(TypeAnimation)
 			})
 		end
 		return ElementFunction   
-	end
-	
+	end	
 
-	
 	return TabFunction
 end
 
-
-	Orion:Destroy()
-end
-
-return OrionLib
+function OrionLib:Destroy()
 	Orion:Destroy()
 end
 
