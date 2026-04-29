@@ -15,13 +15,22 @@ local OrionLib = {
 	Connections = {},
 	Flags = {},
 	Themes = {
-		OrionZ = {
-			Main = Color3.fromRGB(15, 15, 15),
-			Second = Color3.fromRGB(25, 25, 25),
-			Stroke = Color3.fromRGB(45, 45, 45),
-			Divider = Color3.fromRGB(35, 35, 35),
+		Default = {
+			Main = Color3.fromRGB(25, 25, 25),
+			Second = Color3.fromRGB(32, 32, 32),
+			Stroke = Color3.fromRGB(60, 60, 60),
+			Divider = Color3.fromRGB(60, 60, 60),
 			Text = Color3.fromRGB(240, 240, 240),
-			TextDark = Color3.fromRGB(160, 160, 160)
+			TextDark = Color3.fromRGB(150, 150, 150)
+		},
+
+		OrionZ = {
+			Main = Color3.fromRGB(0, 0, 0), -- Preto para o fundo
+			Second = Color3.fromRGB(13, 12, 12), -- Cinza bem escuro para contraste
+			Stroke = Color3.fromRGB(128, 128, 128), -- Azul bebê claro para detalhes
+			Divider = Color3.fromRGB(92, 93, 94), -- Azul bebê mais escuro para divisores
+			Text = Color3.fromRGB(133, 136, 140), -- Azul bebê claro para textos
+			TextDark = Color3.fromRGB(102, 105, 110) -- Azul bebê amarelado para texto secundário
 		}
 	},
 	SelectedTheme = "OrionZ",
@@ -2750,7 +2759,11 @@ spawn(TypeAnimation)
 	return TabFunction
 end
 
-function OrionLib:Destroy()
+
+	Orion:Destroy()
+end
+
+return OrionLib
 	Orion:Destroy()
 end
 
