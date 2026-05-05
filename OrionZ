@@ -942,137 +942,54 @@ local WindowName = AddThemeObject(SetProps(MakeElement("Label", "", 14), {
 	TextSize = 20
 }), "Text")
 
--- [[ OrionZ - Typed Animation Full Script ]]
-
 local targetText = WindowConfig.Name
+local currentCharIndex = 1
+local isDeleting = false
+local isRestoring = false
 local typingSpeed = 0.1
 local pauseTime = 2
-local typingThread = nil
+local animationComplete = false
 
--- アニメーション関数
-local function PlayTypeAnimation()
-    if typingThread then
-        task.cancel(typingThread)
-    end
-
-    -- WindowNameが存在しない場合は処理しない
-    if not WindowName then return end
-
-    typingThread = task.spawn(function()
-        local currentCharIndex = 1
-        local isDeleting = false
-        local isRestoring = false
-        WindowName.Text = ""
-
-        while true do
-            if not isDeleting and not isRestoring then
-                if currentCharIndex <= #targetText then
-                    WindowName.Text = string.sub(targetText, 1, currentCharIndex)
-                    currentCharIndex = currentCharIndex + 1
-                    task.wait(typingSpeed)
-                else
-                    task.wait(pauseTime)
-                    isDeleting = true
-                end
-            elseif isDeleting then
-                if currentCharIndex > 1 then
-                    currentCharIndex = currentCharIndex - 1
-                    WindowName.Text = string.sub(targetText, 1, currentCharIndex)
-                    task.wait(typingSpeed / 1.5)
-                else
-                    isDeleting = false
-                    isRestoring = true
-                    currentCharIndex = 1
-                    task.wait(0.3)
-                end
-            elseif isRestoring then
-                if currentCharIndex <= #targetText then
-                    WindowName.Text = string.sub(targetText, 1, currentCharIndex)
-                    currentCharIndex = currentCharIndex + 1
-                    task.wait(typingSpeed)
-                else
-                    WindowName.Text = targetText
-                    typingThread = nil
-                    break 
-                end
-            end
-            if not MainWindow or not MainWindow.Visible then 
-                typingThread = nil
-                break 
-            end
-        end
-    end)
+local function TypeAnimation()
+	while not animationComplete do
+		if not isDeleting and not isRestoring then
+			if currentCharIndex <= #targetText then
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. ""
+				currentCharIndex = currentCharIndex + 1
+				wait(typingSpeed)
+			else
+				WindowName.Text = targetText .. ""
+				wait(pauseTime)
+				isDeleting = true
+			end
+			
+		elseif isDeleting then
+			if currentCharIndex > 1 then
+				currentCharIndex = currentCharIndex - 1
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. ""
+				wait(typingSpeed / 1.5)
+			else
+				WindowName.Text = ""
+				isDeleting = false
+				isRestoring = true
+				currentCharIndex = 1
+				wait(0.3)
+			end
+			
+		elseif isRestoring then
+			if currentCharIndex <= #targetText then
+				WindowName.Text = string.sub(targetText, 1, currentCharIndex) .. ""
+				currentCharIndex = currentCharIndex + 1
+				wait(typingSpeed)
+			else
+				WindowName.Text = targetText
+				animationComplete = true
+			end
+		end
+	end
 end
 
--- 初期実行
-if not WindowConfig.IntroEnabled then
-    PlayTypeAnimation()
-end
-
--- 最小化ボタンの修正（エラー対策）
--- MinimizeButtonがnilの場合、MainWindowから直接探します
-local RealMinimizeButton = MinimizeButton or (MainWindow and MainWindow:FindFirstChild("Minimize", true))
-
-if RealMinimizeButton then
-    AddConnection(RealMinimizeButton.MouseButton1Click, function()
-        local MainContainer = MainWindow:FindFirstChild("MainContainer")
-        if MainContainer then
-            if not MainContainer.Visible then
-                MainContainer.Visible = true
-                PlayTypeAnimation() -- 再表示された時に再生
-            else
-                MainContainer.Visible = false
-            end
-        end
-    end)
-end
-
--- モバイル用ボタン
-if MobileOpenButton then
-    AddConnection(MobileOpenButton.MouseButton1Click, function() 
-        MobileOpenButton.Visible = false
-        MainWindow.Visible = true
-        UIHidden = false
-        PlayTypeAnimation()
-    end)
-end
-
--- キーボード入力
-AddConnection(UserInputService.InputBegan, function(Input, Focus)
-    if not Focus and Input.KeyCode == Enum.KeyCode[WindowConfig.KeyToOpenWindow] then
-        if UIHidden then
-            MainWindow.Visible = true
-            UIHidden = false
-            PlayTypeAnimation()
-            if WindowConfig.FreeMouse then 
-                UnlockMouse(true) 
-            end
-            if typeof(showMobileOpenButton) == "function" then
-                showMobileOpenButton()
-            end
-        else
-            MainWindow.Visible = false
-            UIHidden = true
-            if WindowConfig.FreeMouse then 
-                UnlockMouse(false) 
-            end
-        end
-    end
-end)
-
--- イントロ終了時の処理
-local function LoadSequence()
-    -- (既存の演出コード)
-    task.wait(2)
-    if LoadSequenceText then
-        TweenService:Create(LoadSequenceText, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-    end
-    MainWindow.Visible = true
-    if LoadSequenceLogo then LoadSequenceLogo:Destroy() end
-    if LoadSequenceText then LoadSequenceText:Destroy() end
-    
-    PlayTypeAnimation()
-end
+spawn(TypeAnimation)
 
 	local WindowTopBarLine = AddThemeObject(SetProps(MakeElement("Frame"), {
 		Size = UDim2.new(1, 0, 0, 1),
