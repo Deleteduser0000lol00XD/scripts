@@ -942,21 +942,26 @@ local WindowName = AddThemeObject(SetProps(MakeElement("Label", "", 14), {
 	TextSize = 20
 }), "Text")
 
+-- [[ OrionZ - Typed Animation Full Script ]]
+
 local targetText = WindowConfig.Name
 local typingSpeed = 0.1
 local pauseTime = 2
 local typingThread = nil
 
+-- アニメーション関数
 local function PlayTypeAnimation()
     if typingThread then
         task.cancel(typingThread)
     end
 
+    -- WindowNameが存在しない場合は処理しない
+    if not WindowName then return end
+
     typingThread = task.spawn(function()
         local currentCharIndex = 1
         local isDeleting = false
         local isRestoring = false
-        
         WindowName.Text = ""
 
         while true do
@@ -969,7 +974,6 @@ local function PlayTypeAnimation()
                     task.wait(pauseTime)
                     isDeleting = true
                 end
-                
             elseif isDeleting then
                 if currentCharIndex > 1 then
                     currentCharIndex = currentCharIndex - 1
@@ -981,7 +985,6 @@ local function PlayTypeAnimation()
                     currentCharIndex = 1
                     task.wait(0.3)
                 end
-                
             elseif isRestoring then
                 if currentCharIndex <= #targetText then
                     WindowName.Text = string.sub(targetText, 1, currentCharIndex)
@@ -993,8 +996,7 @@ local function PlayTypeAnimation()
                     break 
                 end
             end
-            
-            if not MainWindow.Visible then 
+            if not MainWindow or not MainWindow.Visible then 
                 typingThread = nil
                 break 
             end
@@ -1002,29 +1004,40 @@ local function PlayTypeAnimation()
     end)
 end
 
+-- 初期実行
 if not WindowConfig.IntroEnabled then
     PlayTypeAnimation()
 end
 
-AddConnection(MinimizeButton.MouseButton1Click, function()
-    local MainContainer = MainWindow:FindFirstChild("MainContainer")
-    if MainContainer then
-        if not MainContainer.Visible then
-            MainContainer.Visible = true
-            PlayTypeAnimation() 
-        else
-            MainContainer.Visible = false
+-- 最小化ボタンの修正（エラー対策）
+-- MinimizeButtonがnilの場合、MainWindowから直接探します
+local RealMinimizeButton = MinimizeButton or (MainWindow and MainWindow:FindFirstChild("Minimize", true))
+
+if RealMinimizeButton then
+    AddConnection(RealMinimizeButton.MouseButton1Click, function()
+        local MainContainer = MainWindow:FindFirstChild("MainContainer")
+        if MainContainer then
+            if not MainContainer.Visible then
+                MainContainer.Visible = true
+                PlayTypeAnimation() -- 再表示された時に再生
+            else
+                MainContainer.Visible = false
+            end
         end
-    end
-end)
+    end)
+end
 
-AddConnection(MobileOpenButton.MouseButton1Click, function() 
-    MobileOpenButton.Visible = false
-    MainWindow.Visible = true
-    UIHidden = false
-    PlayTypeAnimation()
-end)
+-- モバイル用ボタン
+if MobileOpenButton then
+    AddConnection(MobileOpenButton.MouseButton1Click, function() 
+        MobileOpenButton.Visible = false
+        MainWindow.Visible = true
+        UIHidden = false
+        PlayTypeAnimation()
+    end)
+end
 
+-- キーボード入力
 AddConnection(UserInputService.InputBegan, function(Input, Focus)
     if not Focus and Input.KeyCode == Enum.KeyCode[WindowConfig.KeyToOpenWindow] then
         if UIHidden then
@@ -1034,7 +1047,9 @@ AddConnection(UserInputService.InputBegan, function(Input, Focus)
             if WindowConfig.FreeMouse then 
                 UnlockMouse(true) 
             end
-            showMobileOpenButton()
+            if typeof(showMobileOpenButton) == "function" then
+                showMobileOpenButton()
+            end
         else
             MainWindow.Visible = false
             UIHidden = true
@@ -1045,15 +1060,14 @@ AddConnection(UserInputService.InputBegan, function(Input, Focus)
     end
 end)
 
+-- イントロ終了時の処理
 local function LoadSequence()
+    -- (既存の演出コード)
     task.wait(2)
-    
     if LoadSequenceText then
         TweenService:Create(LoadSequenceText, TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
     end
-    
     MainWindow.Visible = true
-    
     if LoadSequenceLogo then LoadSequenceLogo:Destroy() end
     if LoadSequenceText then LoadSequenceText:Destroy() end
     
