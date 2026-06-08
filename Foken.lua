@@ -773,7 +773,7 @@ function OrionLib:MakeWindow(WindowConfig)
             Size = UDim2.new(1, -20, 1, 0),
             Position = UDim2.new(0, 10, 0, 0),
             BackgroundTransparency = 1,
-            PlaceholderText = "Search...",
+            PlaceholderText = "🔍️: Search",
             Text = "",
             TextColor3 = Color3.fromRGB(255, 255, 255),
             PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
@@ -2073,9 +2073,9 @@ spawn(TypeAnimation)
                 DropdownConfig.Callback = DropdownConfig.Callback or function() end
                 DropdownConfig.Flag = DropdownConfig.Flag or nil
                 DropdownConfig.Save = DropdownConfig.Save or false
-                DropdownConfig.MultiSelect = DropdownConfig.MultiSelect or false 
+                DropdownConfig.fukusuuselect = DropdownConfig.fukusuuselect or false 
 
-                local Dropdown = {Value = {}, Options = DropdownConfig.Options, Buttons = {}, Toggled = false, Type = "Dropdown", Save = DropdownConfig.Save, MultiSelect = DropdownConfig.MultiSelect}
+                local Dropdown = {Value = {}, Options = DropdownConfig.Options, Buttons = {}, Toggled = false, Type = "Dropdown", Save = DropdownConfig.Save, fukusuuselect = DropdownConfig.fukusuuselect}
                 local MaxElements = 5
 
                 if type(DropdownConfig.Default) == "string" and DropdownConfig.Default ~= "" then
@@ -2208,7 +2208,7 @@ spawn(TypeAnimation)
                 end
 
                 function Dropdown:Set(Value)
-                    if Dropdown.MultiSelect then
+                    if Dropdown.fukusuuselect then
                         if Dropdown.Value[Value] then
                             Dropdown.Value[Value] = nil
                         else
@@ -2226,7 +2226,7 @@ spawn(TypeAnimation)
                         table.insert(selectedList, name)
                     end
                     
-                    return DropdownConfig.Callback(Dropdown.MultiSelect and selectedList or Value)
+                    return DropdownConfig.Callback(Dropdown.fukusuuselect and selectedList or Value)
                 end
 
                 AddConnection(Click.MouseButton1Click, function()
