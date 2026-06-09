@@ -2576,7 +2576,7 @@ spawn(TypeAnimation)
                     HueSelection
                 })
 
-                -- 右側にでかいカラーピッカーを配置するためのコンテナ（位置とサイズ調整）
+                -- 右側にでかいカラーピッカーを配置するためのコンテナ
                 local ColorpickerContainer = Create("Frame", {
                     Position = UDim2.new(0.5, 10, 0, 15),
                     Size = UDim2.new(0.5, -20, 0, 100),
@@ -2596,7 +2596,7 @@ spawn(TypeAnimation)
                     Size = UDim2.new(0, 24, 0, 24),
                     Position = UDim2.new(1, -12, 0.5, 0),
                     AnchorPoint = Vector2.new(1, 0.5),
-                    Visible = true -- 初期状態は表示
+                    Visible = true
                 }), {
                     AddThemeObject(MakeElement("Stroke"), "Stroke")
                 }), "Main")
@@ -2610,16 +2610,16 @@ spawn(TypeAnimation)
                     Visible = false
                 }), "Text")
 
-                -- RGB個別入力用枠（TextBox）の作成関数
+                -- 【修正箇所】エラーの原因だった AddThemeObject の二重掛けを解消
                 local function CreateRGBInput(xOffset)
-                    local Box = AddThemeObject(SetProps(MakeElement("TextBox", "0", 12), {
+                    local Box = SetProps(MakeElement("TextBox", "0", 12), {
                         Size = UDim2.new(0, 45, 0, 28),
                         Position = UDim2.new(0, xOffset, 0, 55),
                         Font = Enum.Font.Gotham,
                         Visible = false,
                         ClearTextOnFocus = false
-                    }), "Main")
-                    AddThemeObject(Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Box}), "Stroke")
+                    })
+                    Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Box})
                     return Box
                 end
 
@@ -2658,11 +2658,10 @@ spawn(TypeAnimation)
                     AddThemeObject(MakeElement("Stroke"), "Stroke"),
                 }), "Second")
 
-                -- トグル（開閉）処理のアップデート
+                -- トグル（開閉）処理
                 AddConnection(Click.MouseButton1Click, function()
                     Colorpicker.Toggled = not Colorpicker.Toggled
                     
-                    -- 開いた時は縦幅を 165 に拡張し、各種UIの表示を切り替え
                     TweenService:Create(ColorpickerFrame, TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                         Size = Colorpicker.Toggled and UDim2.new(1, 0, 0, 165) or UDim2.new(1, 0, 0, 38)
                     }):Play()
@@ -2671,10 +2670,8 @@ spawn(TypeAnimation)
                     Hue.Visible = Colorpicker.Toggled
                     ColorpickerContainer.Visible = Colorpicker.Toggled
                     
-                    -- 小さいカラーアイコンは閉じてる時のみ表示（開いてる時は非表示）
                     ColorpickerBox.Visible = not Colorpicker.Toggled
                     
-                    -- RGBテキストと個別入力枠の表示切り替え
                     RGBValueLabel.Visible = Colorpicker.Toggled
                     R_Input.Visible = Colorpicker.Toggled
                     G_Input.Visible = Colorpicker.Toggled
@@ -2683,11 +2680,10 @@ spawn(TypeAnimation)
                     ColorpickerFrame.F.Line.Visible = Colorpicker.Toggled
                 end)
 
-                -- 外部UIやパレットの状態を同期する関数
+                -- 状態同期用関数
                 local function UpdateColorPicker(customColor)
                     local CurrentColor = customColor or Color3.fromHSV(ColorH, ColorS, ColorV)
                     
-                    -- 各数値を255基準に変換
                     local r255 = math.round(CurrentColor.R * 255)
                     local g255 = math.round(CurrentColor.G * 255)
                     local b255 = math.round(CurrentColor.B * 255)
@@ -2698,10 +2694,8 @@ spawn(TypeAnimation)
                         Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
                     end
 
-                    -- (163,161,165) 形式のテキスト更新
                     RGBValueLabel.Text = string.format("(%d, %d, %d)", r255, g255, b255)
                     
-                    -- 入力欄に数値をリアルタイム反映（フォーカスしていない時のみ上書き）
                     if not R_Input:IsFocused() then R_Input.Text = tostring(r255) end
                     if not G_Input:IsFocused() then G_Input.Text = tostring(g255) end
                     if not B_Input:IsFocused() then B_Input.Text = tostring(b255) end
@@ -2711,7 +2705,7 @@ spawn(TypeAnimation)
                     SaveCfg(game.GameId)
                 end
 
-                -- 個別入力（TextBox）が変わった時の処理
+                -- 個別入力（TextBox）変更時の処理
                 local function OnInputChanged()
                     local r = tonumber(R_Input.Text) or 0
                     local g = tonumber(G_Input.Text) or 0
@@ -2725,7 +2719,6 @@ spawn(TypeAnimation)
                     local h, s, v = Color3.toHSV(NewColor)
                     ColorH, ColorS, ColorV = h, s, v
                     
-                    -- パレット上の選択ピン（丸い枠）の位置もリアルタイム更新
                     ColorSelection.Position = UDim2.new(ColorS, 0, 1 - ColorV, 0)
                     HueSelection.Position = UDim2.new(0.5, 0, 1 - ColorH, 0)
                     Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
@@ -2737,12 +2730,11 @@ spawn(TypeAnimation)
                 G_Input.FocusLost:Connect(OnInputChanged)
                 B_Input.FocusLost:Connect(OnInputChanged)
                 
-                -- テキスト変更時もリアルタイムで拾う場合
                 R_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
                 G_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
                 B_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
 
-                -- パレット初期位置の同期計算
+                -- 初期位置同期
                 ColorH = 1 - (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
                 ColorS = (math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
                 ColorV = 1 - (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
