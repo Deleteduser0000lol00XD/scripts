@@ -1364,8 +1364,20 @@ spawn(TypeAnimation)
 			end
 
 			function ElementFunction:AddPhoto(Config)
-                local Text = Config.Name or Config.Text or "Text"
-                local ImageId = Config.id or "rbxassetid://0"
+                local Text = Config.Name or Config.Text or ""
+                local RawId = Config.id or "0"
+                local ImageId = "rbxassetid://0"
+
+                if type(RawId) == "string" then
+                    local cleanedId = RawId:match("%d+")
+                    if cleanedId then
+                        ImageId = "http://www.roblox.com/asset/?id=" .. cleanedId
+                    else
+                        ImageId = RawId
+                    end
+                elseif type(RawId) == "number" then
+                    ImageId = "http://www.roblox.com/asset/?id=" .. tostring(RawId)
+                end
 
                 local ParagraphFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
                     Size = UDim2.new(1, 0, 0, 100),
@@ -1389,6 +1401,12 @@ spawn(TypeAnimation)
                     AddThemeObject(MakeElement("Stroke"), "Stroke")
                 }), "Second")
 
+                task.spawn(function()
+                    pcall(function()
+                        game:GetService("ContentProvider"):PreloadAsync({ParagraphFrame.Photo})
+                    end)
+                end)
+
                 local function UpdateLayout()
                     local imgSize = ParagraphFrame.Photo.ContentImageSize
                     if imgSize.X > 0 and imgSize.Y > 0 then
@@ -1406,12 +1424,23 @@ spawn(TypeAnimation)
                 end
 
                 AddConnection(ParagraphFrame.Photo:GetPropertyChangedSignal("ContentImageSize"), UpdateLayout)
+                AddConnection(ParagraphFrame.Photo:GetPropertyChangedSignal("IsLoaded"), UpdateLayout)
                 UpdateLayout()
 
                 local PhotoFunction = {}
-                function PhotoFunction:Set(NewImageId)
-                    if NewImageId then 
-                        ParagraphFrame.Photo.Image = NewImageId 
+                function PhotoFunction:Set(NewRawId)
+                    if NewRawId then 
+                        local cleanedId = tostring(NewRawId):match("%d+")
+                        if cleanedId then
+                            ParagraphFrame.Photo.Image = "http://www.roblox.com/asset/?id=" .. cleanedId
+                        else
+                            ParagraphFrame.Photo.Image = tostring(NewRawId)
+                        end
+                        task.spawn(function()
+                            pcall(function()
+                                game:GetService("ContentProvider"):PreloadAsync({ParagraphFrame.Photo})
+                            end)
+                        end)
                     end
                     UpdateLayout()
                 end
