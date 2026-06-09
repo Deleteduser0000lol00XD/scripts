@@ -25,16 +25,16 @@ local OrionLib = {
 			TextDark = Color3.fromRGB(31, 31, 31)
 		},
 
-		OrionZ = {
+		OrionFR = {
 			Main = Color3.fromRGB(54, 97, 115),
 			Second = Color3.fromRGB(41, 68, 79),
 			Stroke = Color3.fromRGB(0, 68, 97),
 			Divider = Color3.fromRGB(0, 68, 97),
-			Text = Color3.fromRGB(72, 104, 117),
-			TextDark = Color3.fromRGB(39, 42, 43)
+			Text = Color3.fromRGB(177, 193, 199),
+			TextDark = Color3.fromRGB(177, 193, 199)
 		}
 	},
-	SelectedTheme = "OrionZ",
+	SelectedTheme = "OrionFR",
 	Folder = nil,
 	SaveCfg = false
 }
@@ -63,7 +63,7 @@ local Orion = Instance.new("ScreenGui")
 
 local FocusDrag = nil
 
-Orion.Name = "OrionZ"
+Orion.Name = "OrionFR"
 
 getgenv().gethui = function() return game.CoreGui end
 
@@ -249,7 +249,7 @@ local function LoadCfg(Config)
 				end    
 			end)
 		else
-			warn("OrionZ Library Config Loader - Could not find ", a ,b)
+			warn("OrionF Library Config Loader - Could not find ", a ,b)
 		end
 	end)
 end
@@ -697,7 +697,7 @@ function OrionLib:MakeWindow(WindowConfig)
 	
 
 	WindowConfig = WindowConfig or {}
-	WindowConfig.Name = WindowConfig.Name or "OrionZ Library"
+	WindowConfig.Name = WindowConfig.Name or "OrionFR Library"
 	WindowConfig.ConfigFolder = WindowConfig.ConfigFolder or WindowConfig.Name
 	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false
 	WindowConfig.HidePremium = WindowConfig.HidePremium or false
@@ -706,11 +706,11 @@ function OrionLib:MakeWindow(WindowConfig)
 	end
 	WindowConfig.FreeMouse = WindowConfig.FreeMouse or false
 	WindowConfig.KeyToOpenWindow = WindowConfig.KeyToOpenWindow or "K"
-	WindowConfig.IntroText = WindowConfig.IntroText or "OrionZ Library"
+	WindowConfig.IntroText = WindowConfig.IntroText or "OrionFR Library"
 	WindowConfig.CloseCallback = WindowConfig.CloseCallback or function() end
 	WindowConfig.ShowIcon = WindowConfig.ShowIcon or false
-	WindowConfig.Icon = WindowConfig.Icon or "rbxassetid://127144408861646"
-	WindowConfig.IntroIcon = WindowConfig.IntroIcon or "rbxassetid://127144408861646"
+	WindowConfig.Icon = WindowConfig.Icon or "rbxassetid://"
+	WindowConfig.IntroIcon = WindowConfig.IntroIcon or "rbxassetid://"
 	OrionLib.Folder = WindowConfig.ConfigFolder
 	OrionLib.SaveCfg = WindowConfig.SaveConfig
 	if WindowConfig.SaveConfig then
@@ -728,9 +728,9 @@ function OrionLib:MakeWindow(WindowConfig)
 	{
 		BackgroundTransparency = 0, 
 		Parent = Orion, 
-		Text =  "orionZ",
+		Text =  "gui",
 		TextScaled = true,
-		TextSize = 13,
+		TextSize = 12,
 		TextColor3 = Color3.new(0, 0, 0),
 		BackgroundColor = BrickColor.new(0, 0, 0),
 		TextStrokeColor3 = Color3.new(255, 255, 255),
@@ -774,7 +774,7 @@ function OrionLib:MakeWindow(WindowConfig)
             Size = UDim2.new(1, -20, 1, 0),
             Position = UDim2.new(0, 10, 0, 0),
             BackgroundTransparency = 1,
-            PlaceholderText = "🔍️: Search",
+            PlaceholderText = "Search",
             Text = "",
             TextColor3 = Color3.fromRGB(255, 255, 255),
             PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
