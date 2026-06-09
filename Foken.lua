@@ -2539,7 +2539,6 @@ spawn(TypeAnimation)
                 local ColorH, ColorS, ColorV = 1, 1, 1
                 local Colorpicker = {Value = ColorpickerConfig.Default, Toggled = false, Type = "Colorpicker", Save = ColorpickerConfig.Save}
 
-                -- カラーピッカー内の丸丸セレクター
                 local ColorSelection = Create("ImageLabel", {
                     Size = UDim2.new(0, 18, 0, 18),
                     Position = UDim2.new(select(3, Color3.toHSV(Colorpicker.Value))),
@@ -2549,19 +2548,17 @@ spawn(TypeAnimation)
                     Image = "http://www.roblox.com/asset/?id=4805639000"
                 })
 
-                -- 虹色スライダー内の丸丸セレクター
                 local HueSelection = Create("ImageLabel", {
                     Size = UDim2.new(0, 18, 0, 18),
-                    Position = UDim2.new(select(1, Color3.toHSV(Colorpicker.Value)), 0, 0.5, 0), -- 初期位置をX軸ベースに
+                    Position = UDim2.new(select(1, Color3.toHSV(Colorpicker.Value)), 0, 0.5, 0),
                     ScaleType = Enum.ScaleType.Fit,
                     AnchorPoint = Vector2.new(0.5, 0.5),
                     BackgroundTransparency = 1,
                     Image = "http://www.roblox.com/asset/?id=4805639000"
                 })
 
-                -- 大型カラーピッカー本体
                 local Color = Create("ImageLabel", {
-                    Size = UDim2.new(1, 0, 1, -20), -- 下部のスライダー用に少し縦を縮める
+                    Size = UDim2.new(1, 0, 1, -20),
                     Visible = false,
                     Image = "rbxassetid://4155801252"
                 }, {
@@ -2569,22 +2566,19 @@ spawn(TypeAnimation)
                     ColorSelection
                 })
 
-                -- 【変更】虹色スライダーをピッカーの下部に横型として配置
                 local Hue = Create("Frame", {
                     Size = UDim2.new(1, 0, 0, 14),
                     Position = UDim2.new(0, 0, 1, -14),
                     Visible = false
                 }, {
-                    -- Rotationを0にして横グラデーションに変更
                     Create("UIGradient", {Rotation = 0, Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))},}),
                     Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
                     HueSelection
                 })
 
-                -- 右側の大型ピッカー展開用コンテナ
                 local ColorpickerContainer = Create("Frame", {
                     Position = UDim2.new(0.5, 10, 0, 15),
-                    Size = UDim2.new(0.5, -20, 0, 110), -- 横型Hueが下に付くため縦幅を調整
+                    Size = UDim2.new(0.5, -20, 0, 110),
                     BackgroundTransparency = 1,
                     ClipsDescendants = false,
                     Visible = false
@@ -2597,7 +2591,6 @@ spawn(TypeAnimation)
                     Size = UDim2.new(1, 0, 1, 0)
                 })
 
-                -- 通常時の右端の小さな色枠
                 local ColorpickerBox = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 4), {
                     Size = UDim2.new(0, 24, 0, 24),
                     Position = UDim2.new(1, -12, 0.5, 0),
@@ -2607,16 +2600,31 @@ spawn(TypeAnimation)
                     AddThemeObject(MakeElement("Stroke"), "Stroke")
                 }), "Main")
 
-                -- 汎用TextBox作成用関数（枠線と丸角を自動付与）
                 local function CreateStyledInput(w, h, x, y)
                     local Box = SetProps(MakeElement("TextBox", "0", 14), {
                         Size = UDim2.new(0, w, 0, h),
                         Position = UDim2.new(0, x, 0, y),
                         Font = Enum.Font.Gotham,
                         Visible = false,
-                        ClearTextOnFocus = false
+                        ClearTextOnFocus = false,
+                        BackgroundTransparency = 0.85,
+                        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                        TextColor3 = Color3.fromRGB(255, 255, 255)
                     })
-                    Create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = Box})
+                    
+                    Create("UICorner", {
+                        CornerRadius = UDim.new(0, 8), 
+                        Parent = Box
+                    })
+                    
+                    Create("UIStroke", {
+                        Thickness = 1,
+                        Color = Color3.fromRGB(255, 255, 255),
+                        Transparency = 0.7,
+                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                        Parent = Box
+                    })
+                    
                     return Box
                 end
 
@@ -2626,16 +2634,14 @@ spawn(TypeAnimation)
 
                 local Full_Input = CreateStyledInput(145, 30, 12, 85)
 
-                -- メインフレーム構成
                 local ColorpickerFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
-                    Size = UDim2.new(1, 0, 0, 38), -- 閉じている時は38
+                    Size = UDim2.new(1, 0, 0, 38),
                     Parent = ItemParent
                 }), {
                     SetProps(SetChildren(MakeElement("TFrame"), {
-                        -- タイトルの縦伸び防止対策: Sizeを 0, 20 に適正化
                         AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
                             Size = UDim2.new(1, -50, 0, 20),
-                            Position = UDim2.new(0, 12, 0, 9), -- 上下の中心あたりへ
+                            Position = UDim2.new(0, 12, 0, 9),
                             Font = Enum.Font.GothamBold,
                             Name = "Content",
                             TextXAlignment = Enum.TextXAlignment.Left
@@ -2658,7 +2664,6 @@ spawn(TypeAnimation)
                     AddThemeObject(MakeElement("Stroke"), "Stroke"),
                 }), "Second")
 
-                -- 開閉（トグル）処理
                 AddConnection(Click.MouseButton1Click, function()
                     Colorpicker.Toggled = not Colorpicker.Toggled
                     
@@ -2680,7 +2685,6 @@ spawn(TypeAnimation)
                     ColorpickerFrame.F.Line.Visible = Colorpicker.Toggled
                 end)
 
-                -- 全体の色状態を各UIへ同期する関数
                 local function UpdateColorPicker(customColor)
                     local CurrentColor = customColor or Color3.fromHSV(ColorH, ColorS, ColorV)
                     
@@ -2694,12 +2698,10 @@ spawn(TypeAnimation)
                         Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
                     end
 
-                    -- 小分けボックスへ同期
                     if not R_Input:IsFocused() then R_Input.Text = tostring(r255) end
                     if not G_Input:IsFocused() then G_Input.Text = tostring(g255) end
                     if not B_Input:IsFocused() then B_Input.Text = tostring(b255) end
                     
-                    -- Fullボックスへ同期 (#HEX表記)
                     if not Full_Input:IsFocused() then 
                         Full_Input.Text = string.format("#%02X%02X%02X", r255, g255, b255) 
                     end
@@ -2709,7 +2711,6 @@ spawn(TypeAnimation)
                     SaveCfg(game.GameId)
                 end
 
-                -- 小分け数値 (RGB) 変更時の処理
                 local function OnInputChanged()
                     local r = tonumber(R_Input.Text) or 0
                     local g = tonumber(G_Input.Text) or 0
@@ -2730,7 +2731,6 @@ spawn(TypeAnimation)
                     UpdateColorPicker(NewColor)
                 end
 
-                -- Full数値 (HEX) 変更時の処理
                 local function OnFullInputChanged()
                     local hex = Full_Input.Text:gsub("#", "")
                     if #hex == 6 then
@@ -2761,12 +2761,10 @@ spawn(TypeAnimation)
                 G_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
                 B_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
 
-                -- 初期位置同期
                 ColorH = math.clamp(HueSelection.AbsolutePosition.X - Hue.AbsolutePosition.X, 0, Hue.AbsoluteSize.X) / Hue.AbsoluteSize.X
                 ColorS = math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X
                 ColorV = 1 - (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
                 
-                -- Color面 ドラッグ処理
                 local Dragging, DragInput, MousePos, FramePos = false
 
                 AddConnection(Color.InputBegan, function(Input)
@@ -2802,7 +2800,6 @@ spawn(TypeAnimation)
                     end
                 end)
 
-                -- 【変更】横型Hueスライダーのドラッグ処理 (X軸ベースに完全書き換え)
                 local Dragging_1, DragInput_1, MousePos_1, FramePos_1 = false
 
                 AddConnection(Hue.InputBegan, function(Input)
@@ -2836,7 +2833,6 @@ spawn(TypeAnimation)
                     end
                 end)
 
-                -- 外部設定用メソッド
                 function Colorpicker:Set(Value)
                     local h, s, v = Color3.toHSV(Value)
                     ColorH, ColorS, ColorV = h, s, v
