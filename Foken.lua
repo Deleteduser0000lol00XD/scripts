@@ -1363,6 +1363,61 @@ spawn(TypeAnimation)
 				return ParagraphFunction
 			end
 
+			function ElementFunction:AddPhoto(Config)
+                local Text = Config.Name or Config.Text or "Text"
+                local ImageId = Config.id or "rbxassetid://0"
+
+                local ParagraphFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
+                    Size = UDim2.new(1, 0, 0, 100),
+                    BackgroundTransparency = 0.7,
+                    Parent = ItemParent
+                }), {
+                    AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
+                        Size = UDim2.new(1, -12, 0, 14),
+                        Position = UDim2.new(0, 12, 0, 10),
+                        Font = Enum.Font.GothamBold,
+                        Name = "Title"
+                    }), "Text"),
+                    SetProps(Instance.new("ImageLabel"), {
+                        Name = "Photo",
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, -24, 0, 200),
+                        Position = UDim2.new(0, 12, 0, 32),
+                        Image = ImageId,
+                        ScaleType = Enum.ScaleType.Fit
+                    }),
+                    AddThemeObject(MakeElement("Stroke"), "Stroke")
+                }), "Second")
+
+                local function UpdateLayout()
+                    local imgSize = ParagraphFrame.Photo.ContentImageSize
+                    if imgSize.X > 0 and imgSize.Y > 0 then
+                        local maxWidth = ParagraphFrame.AbsoluteSize.X - 24
+                        if maxWidth <= 0 then maxWidth = 400 end
+                        local hRatio = maxWidth / imgSize.X
+                        local calculatedHeight = imgSize.Y * hRatio
+                        
+                        ParagraphFrame.Photo.Size = UDim2.new(1, -24, 0, calculatedHeight)
+                        ParagraphFrame.Size = UDim2.new(1, 0, 0, 32 + calculatedHeight + 12)
+                    else
+                        ParagraphFrame.Photo.Size = UDim2.new(1, -24, 0, 200)
+                        ParagraphFrame.Size = UDim2.new(1, 0, 0, 244)
+                    end
+                end
+
+                AddConnection(ParagraphFrame.Photo:GetPropertyChangedSignal("ContentImageSize"), UpdateLayout)
+                UpdateLayout()
+
+                local PhotoFunction = {}
+                function PhotoFunction:Set(NewImageId)
+                    if NewImageId then 
+                        ParagraphFrame.Photo.Image = NewImageId 
+                    end
+                    UpdateLayout()
+                end
+                return PhotoFunction
+            end
+
 			function ElementFunction:AddButton(ButtonConfig)
 				ButtonConfig = ButtonConfig or {}
 				ButtonConfig.Name = ButtonConfig.Name or "Button"
