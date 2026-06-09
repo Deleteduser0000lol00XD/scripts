@@ -5,6 +5,7 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 local PlayerService = game:GetService("Players")
 local UserService = game:GetService("UserService")
+local ContentProvider = game:GetService("ContentProvider")
 
 local LocalPlayer = PlayerService.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -25,10 +26,10 @@ local OrionLib = {
 		},
 
 		OrionZ = {
-			Main = Color3.fromRGB(0, 0, 0),
-			Second = Color3.fromRGB(0, 0, 0),
-			Stroke = Color3.fromRGB(20, 20, 20),
-			Divider = Color3.fromRGB(20, 20, 20),
+			Main = Color3.fromRGB(54, 97, 115),
+			Second = Color3.fromRGB(41, 68, 79),
+			Stroke = Color3.fromRGB(0, 68, 97),
+			Divider = Color3.fromRGB(0, 68, 97),
 			Text = Color3.fromRGB(255, 255, 255),
 			TextDark = Color3.fromRGB(180, 180, 180)
 		}
@@ -1364,7 +1365,6 @@ spawn(TypeAnimation)
 			end
 
 			function ElementFunction:AddPhoto(Config)
-                local Text = Config.Name or Config.Text or ""
                 local RawId = Config.id or "0"
                 local ImageId = "rbxassetid://0"
 
@@ -1380,21 +1380,15 @@ spawn(TypeAnimation)
                 end
 
                 local ParagraphFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
-                    Size = UDim2.new(1, 0, 0, 100),
+                    Size = UDim2.new(1, 0, 0, 200),
                     BackgroundTransparency = 0.7,
                     Parent = ItemParent
                 }), {
-                    AddThemeObject(SetProps(MakeElement("Label", Text, 15), {
-                        Size = UDim2.new(1, -12, 0, 14),
-                        Position = UDim2.new(0, 12, 0, 10),
-                        Font = Enum.Font.GothamBold,
-                        Name = "Title"
-                    }), "Text"),
                     SetProps(Instance.new("ImageLabel"), {
                         Name = "Photo",
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -24, 0, 200),
-                        Position = UDim2.new(0, 12, 0, 32),
+                        Size = UDim2.new(1, 0, 0, 200),
+                        Position = UDim2.new(0, 0, 0, 0),
                         Image = ImageId,
                         ScaleType = Enum.ScaleType.Fit
                     }),
@@ -1403,23 +1397,23 @@ spawn(TypeAnimation)
 
                 task.spawn(function()
                     pcall(function()
-                        game:GetService("ContentProvider"):PreloadAsync({ParagraphFrame.Photo})
+                        ContentProvider:PreloadAsync({ParagraphFrame.Photo})
                     end)
                 end)
 
                 local function UpdateLayout()
                     local imgSize = ParagraphFrame.Photo.ContentImageSize
                     if imgSize.X > 0 and imgSize.Y > 0 then
-                        local maxWidth = ParagraphFrame.AbsoluteSize.X - 24
-                        if maxWidth <= 0 then maxWidth = 400 end
+                        local maxWidth = ParagraphFrame.AbsoluteSize.X
+                        if maxWidth <= 0 then maxWidth = 420 end -- フォールバック
                         local hRatio = maxWidth / imgSize.X
                         local calculatedHeight = imgSize.Y * hRatio
                         
-                        ParagraphFrame.Photo.Size = UDim2.new(1, -24, 0, calculatedHeight)
-                        ParagraphFrame.Size = UDim2.new(1, 0, 0, 32 + calculatedHeight + 12)
+                        ParagraphFrame.Photo.Size = UDim2.new(1, 0, 0, calculatedHeight)
+                        ParagraphFrame.Size = UDim2.new(1, 0, 0, calculatedHeight)
                     else
-                        ParagraphFrame.Photo.Size = UDim2.new(1, -24, 0, 200)
-                        ParagraphFrame.Size = UDim2.new(1, 0, 0, 244)
+                        ParagraphFrame.Photo.Size = UDim2.new(1, 0, 0, 200)
+                        ParagraphFrame.Size = UDim2.new(1, 0, 0, 200)
                     end
                 end
 
