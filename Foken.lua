@@ -2539,322 +2539,298 @@ spawn(TypeAnimation)
                 local ColorH, ColorS, ColorV = 1, 1, 1
                 local Colorpicker = {Value = ColorpickerConfig.Default, Toggled = false, Type = "Colorpicker", Save = ColorpickerConfig.Save}
 
-                -- 初期値からHSVを設定
-                ColorH, ColorS, ColorV = Color3.toHSV(Colorpicker.Value)
-
-                -----------------------------------------
-                -- 左側：テキスト情報（名前、RGB入力枠、一括数値表示）
-                -----------------------------------------
-                
-                -- カラーピッカーの名前
-                local NameLabel = AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 14), {
-                    Size = UDim2.new(0, 150, 0, 20),
-                    Position = UDim2.new(0, 12, 0, 12),
-                    Font = Enum.Font.GothamBold,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Name = "NameLabel"
-                }), "Text")
-
-                -- 開いた時のみ表示する左側のテキストコンテナ
-                local InfoContainer = Create("Frame", {
-                    Size = UDim2.new(0, 150, 0, 70),
-                    Position = UDim2.new(0, 12, 0, 38),
-                    BackgroundTransparency = 1,
-                    Visible = false,
-                    Name = "InfoContainer"
-                })
-
-                -- RGBそれぞれの入力枠（TextBox）を作成する共通関数
-                local function CreateRgbInput(positionX, name)
-                    local Box = Create("TextBox", {
-                        Size = UDim2.new(0, 40, 0, 24),
-                        Position = UDim2.new(0, positionX, 0, 0),
-                        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-                        TextColor3 = Color3.fromRGB(255, 255, 255),
-                        TextSize = 12,
-                        Font = Enum.Font.Gotham,
-                        Text = "0",
-                        ClearTextOnFocus = false,
-                        Parent = InfoContainer,
-                        Name = name
-                    }, {
-                        Create("UICorner", {CornerRadius = UDim.new(0, 4)}),
-                        Create("UIStroke", {Color = Color3.fromRGB(60, 60, 60), Thickness = 1})
-                    })
-                    return Box
-                end
-
-                local RInput = CreateRgbInput(0, "RInput")
-                local GInput = CreateRgbInput(46, "GInput")
-                local BInput = CreateRgbInput(92, "BInput")
-
-                -- 下段のカンマ区切り数値表示ラベル (例: 163, 161, 165)
-                local FullValueLabel = AddThemeObject(SetProps(MakeElement("Label", "0, 0, 0", 12), {
-                    Size = UDim2.new(1, 0, 0, 24),
-                    Position = UDim2.new(0, 0, 0, 34),
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Name = "FullValueLabel"
-                }), "Text")
-                FullValueLabel.Parent = InfoContainer
-
-
-                -----------------------------------------
-                -- 中央・右側：カラーパレット ＆ 色相バー
-                -----------------------------------------
-
                 local ColorSelection = Create("ImageLabel", {
-                    Size = UDim2.new(0, 14, 0, 14),
-                    Position = UDim2.new(ColorS, 0, 1 - ColorV, 0),
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Position = UDim2.new(select(3, Color3.toHSV(Colorpicker.Value))),
                     ScaleType = Enum.ScaleType.Fit,
                     AnchorPoint = Vector2.new(0.5, 0.5),
                     BackgroundTransparency = 1,
-                    Image = "http://www.roblox.com/asset/?id=4805639000",
-                    ZIndex = 3
+                    Image = "http://www.roblox.com/asset/?id=4805639000"
                 })
 
                 local HueSelection = Create("ImageLabel", {
-                    Size = UDim2.new(0, 14, 0, 14),
-                    Position = UDim2.new(1 - ColorH, 0, 0.5, 0),
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Position = UDim2.new(0.5, 0, 1 - select(1, Color3.toHSV(Colorpicker.Value))),
                     ScaleType = Enum.ScaleType.Fit,
                     AnchorPoint = Vector2.new(0.5, 0.5),
                     BackgroundTransparency = 1,
-                    Image = "http://www.roblox.com/asset/?id=4805639000",
-                    ZIndex = 3
+                    Image = "http://www.roblox.com/asset/?id=4805639000"
                 })
 
-                -- カラーパレット
                 local Color = Create("ImageLabel", {
-                    Size = UDim2.new(0, 200, 0, 80),
-                    Position = UDim2.new(0, 165, 0, 12),
+                    Size = UDim2.new(1, -25, 1, 0),
                     Visible = false,
-                    Image = "rbxassetid://4155801252",
-                    ZIndex = 2
+                    Image = "rbxassetid://4155801252"
                 }, {
                     Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
                     ColorSelection
                 })
 
-                -- 横型の色相バー
                 local Hue = Create("Frame", {
-                    Size = UDim2.new(0, 200, 0, 12),
-                    Position = UDim2.new(0, 165, 0, 98),
-                    Visible = false,
-                    ZIndex = 2
+                    Size = UDim2.new(0, 20, 1, 0),
+                    Position = UDim2.new(1, -20, 0, 0),
+                    Visible = false
                 }, {
-                    Create("UIGradient", {Rotation = 0, Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))}}),
-                    Create("UICorner", {CornerRadius = UDim.new(0, 3)}),
+                    Create("UIGradient", {Rotation = 270, Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))},}),
+                    Create("UICorner", {CornerRadius = UDim.new(0, 5)}),
                     HueSelection
                 })
 
+                -- 右側にでかいカラーピッカーを配置するためのコンテナ（位置とサイズ調整）
                 local ColorpickerContainer = Create("Frame", {
-                    Position = UDim2.new(0, 0, 0, 0),
-                    Size = UDim2.new(1, 0, 1, 0),
+                    Position = UDim2.new(0.5, 10, 0, 15),
+                    Size = UDim2.new(0.5, -20, 0, 100),
                     BackgroundTransparency = 1,
-                    ClipsDescendants = true
+                    ClipsDescendants = false,
+                    Visible = false
                 }, {
                     Hue,
-                    Color,
-                    InfoContainer
+                    Color
                 })
 
-                -- 通常時（閉じてる時）のみ右端に表示されるカラーアイコン
+                local Click = SetProps(MakeElement("Button"), {
+                    Size = UDim2.new(1, 0, 1, 0)
+                })
+
                 local ColorpickerBox = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 4), {
                     Size = UDim2.new(0, 24, 0, 24),
                     Position = UDim2.new(1, -12, 0.5, 0),
                     AnchorPoint = Vector2.new(1, 0.5),
-                    Visible = true,
-                    ZIndex = 4
+                    Visible = true -- 初期状態は表示
                 }), {
                     AddThemeObject(MakeElement("Stroke"), "Stroke")
                 }), "Main")
 
-                -- クリック検知用の透明ボタン
-                local Click = SetProps(MakeElement("Button"), {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    ZIndex = 5
-                })
+                -- RGB数値表示用テキスト（名前の下用）
+                local RGBValueLabel = AddThemeObject(SetProps(MakeElement("Label", "(255, 255, 255)", 12), {
+                    Size = UDim2.new(0, 200, 0, 14),
+                    Position = UDim2.new(0, 12, 0, 22),
+                    Font = Enum.Font.Gotham,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Visible = false
+                }), "Text")
 
-                -- メインフレーム
+                -- RGB個別入力用枠（TextBox）の作成関数
+                local function CreateRGBInput(xOffset)
+                    local Box = AddThemeObject(SetProps(MakeElement("TextBox", "0", 12), {
+                        Size = UDim2.new(0, 45, 0, 28),
+                        Position = UDim2.new(0, xOffset, 0, 55),
+                        Font = Enum.Font.Gotham,
+                        Visible = false,
+                        ClearTextOnFocus = false
+                    }), "Main")
+                    AddThemeObject(Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Box}), "Stroke")
+                    return Box
+                end
+
+                local R_Input = CreateRGBInput(12)
+                local G_Input = CreateRGBInput(62)
+                local B_Input = CreateRGBInput(112)
+
                 local ColorpickerFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 5), {
                     Size = UDim2.new(1, 0, 0, 38),
                     Parent = ItemParent
                 }), {
                     SetProps(SetChildren(MakeElement("TFrame"), {
-                        NameLabel,
+                        AddThemeObject(SetProps(MakeElement("Label", ColorpickerConfig.Name, 15), {
+                            Size = UDim2.new(1, -12, 0, 20),
+                            Position = UDim2.new(0, 12, 0, 3),
+                            Font = Enum.Font.GothamBold,
+                            Name = "Content",
+                            TextXAlignment = Enum.TextXAlignment.Left
+                        }), "Text"),
+                        RGBValueLabel,
+                        R_Input, G_Input, B_Input,
                         ColorpickerBox,
                         Click,
+                        AddThemeObject(SetProps(MakeElement("Frame"), {
+                            Size = UDim2.new(1, 0, 0, 1),
+                            Position = UDim2.new(0, 0, 1, -1),
+                            Name = "Line",
+                            Visible = false
+                        }), "Stroke"), 
                     }), {
-                        Size = UDim2.new(1, 0, 1, 0),
-                        ClipsDescendants = true,
+                        Size = UDim2.new(1, 0, 0, 38),
+                        ClipsDescendants = false,
                         Name = "F"
                     }),
                     ColorpickerContainer,
                     AddThemeObject(MakeElement("Stroke"), "Stroke"),
                 }), "Second")
 
-
-                -----------------------------------------
-                -- トグル処理（開閉アニメーション ＆ アイコン非表示化）
-                -----------------------------------------
+                -- トグル（開閉）処理のアップデート
                 AddConnection(Click.MouseButton1Click, function()
                     Colorpicker.Toggled = not Colorpicker.Toggled
                     
-                    local targetSize = Colorpicker.Toggled and UDim2.new(1, 0, 0, 124) or UDim2.new(1, 0, 0, 38)
-                    TweenService:Create(ColorpickerFrame, TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+                    -- 開いた時は縦幅を 165 に拡張し、各種UIの表示を切り替え
+                    TweenService:Create(ColorpickerFrame, TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        Size = Colorpicker.Toggled and UDim2.new(1, 0, 0, 165) or UDim2.new(1, 0, 0, 38)
+                    }):Play()
                     
-                    -- 開いている時はパレット類を表示し、右端のアイコンを「非表示」にする
                     Color.Visible = Colorpicker.Toggled
                     Hue.Visible = Colorpicker.Toggled
-                    InfoContainer.Visible = Colorpicker.Toggled
+                    ColorpickerContainer.Visible = Colorpicker.Toggled
+                    
+                    -- 小さいカラーアイコンは閉じてる時のみ表示（開いてる時は非表示）
                     ColorpickerBox.Visible = not Colorpicker.Toggled
+                    
+                    -- RGBテキストと個別入力枠の表示切り替え
+                    RGBValueLabel.Visible = Colorpicker.Toggled
+                    R_Input.Visible = Colorpicker.Toggled
+                    G_Input.Visible = Colorpicker.Toggled
+                    B_Input.Visible = Colorpicker.Toggled
+                    
+                    ColorpickerFrame.F.Line.Visible = Colorpicker.Toggled
                 end)
 
+                -- 外部UIやパレットの状態を同期する関数
+                local function UpdateColorPicker(customColor)
+                    local CurrentColor = customColor or Color3.fromHSV(ColorH, ColorS, ColorV)
+                    
+                    -- 各数値を255基準に変換
+                    local r255 = math.round(CurrentColor.R * 255)
+                    local g255 = math.round(CurrentColor.G * 255)
+                    local b255 = math.round(CurrentColor.B * 255)
 
-                -----------------------------------------
-                -- カラー同期・更新関数
-                -----------------------------------------
-                local function UpdateColorPicker(skipTextUpdate)
-                    local chosenColor = Color3.fromHSV(ColorH, ColorS, ColorV)
-                    ColorpickerBox.BackgroundColor3 = chosenColor
-                    Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
+                    ColorpickerBox.BackgroundColor3 = CurrentColor
                     
-                    local r = math.round(chosenColor.R * 255)
-                    local g = math.round(chosenColor.G * 255)
-                    local b = math.round(chosenColor.B * 255)
-                    
-                    -- TextBox入力中以外の時のみ、TextBoxの数値を現在の色に合わせる
-                    if not skipTextUpdate then
-                        RInput.Text = tostring(r)
-                        GInput.Text = tostring(g)
-                        BInput.Text = tostring(b)
+                    if not customColor then
+                        Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
                     end
-                    
-                    -- 下段ラベルに数値をカンマ区切り形式で表示
-                    FullValueLabel.Text = string.format("%d, %d, %d", r, g, b)
 
-                    ColorpickerConfig.Callback(chosenColor)
+                    -- (163,161,165) 形式のテキスト更新
+                    RGBValueLabel.Text = string.format("(%d, %d, %d)", r255, g255, b255)
+                    
+                    -- 入力欄に数値をリアルタイム反映（フォーカスしていない時のみ上書き）
+                    if not R_Input:IsFocused() then R_Input.Text = tostring(r255) end
+                    if not G_Input:IsFocused() then G_Input.Text = tostring(g255) end
+                    if not B_Input:IsFocused() then B_Input.Text = tostring(b255) end
+
+                    Colorpicker.Value = CurrentColor
+                    ColorpickerConfig.Callback(CurrentColor)
                     SaveCfg(game.GameId)
                 end
 
-
-                -----------------------------------------
-                -- TextBoxからの数値入力（リアルタイム反映）
-                -----------------------------------------
-                local function OnUserInputChange()
-                    local r = tonumber(RInput.Text) or 0
-                    local g = tonumber(GInput.Text) or 0
-                    local b = tonumber(BInput.Text) or 0
+                -- 個別入力（TextBox）が変わった時の処理
+                local function OnInputChanged()
+                    local r = tonumber(R_Input.Text) or 0
+                    local g = tonumber(G_Input.Text) or 0
+                    local b = tonumber(B_Input.Text) or 0
                     
-                    -- 0～255の範囲にクランプ
                     r = math.clamp(r, 0, 255)
                     g = math.clamp(g, 0, 255)
                     b = math.clamp(b, 0, 255)
                     
-                    local newColor = Color3.fromRGB(r, g, b)
-                    ColorH, ColorS, ColorV = Color3.toHSV(newColor)
+                    local NewColor = Color3.fromRGB(r, g, b)
+                    local h, s, v = Color3.toHSV(NewColor)
+                    ColorH, ColorS, ColorV = h, s, v
                     
-                    -- ピッカーポインタの位置を更新
+                    -- パレット上の選択ピン（丸い枠）の位置もリアルタイム更新
                     ColorSelection.Position = UDim2.new(ColorS, 0, 1 - ColorV, 0)
-                    HueSelection.Position = UDim2.new(1 - ColorH, 0, 0.5, 0)
+                    HueSelection.Position = UDim2.new(0.5, 0, 1 - ColorH, 0)
+                    Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
                     
-                    -- テキストを再ループ書き換えしないよう true を渡す
-                    UpdateColorPicker(true)
+                    UpdateColorPicker(NewColor)
                 end
 
-                AddConnection(RInput:GetPropertyChangedSignal("Text"), OnUserInputChange)
-                AddConnection(GInput:GetPropertyChangedSignal("Text"), OnUserInputChange)
-                AddConnection(BInput:GetPropertyChangedSignal("Text"), OnUserInputChange)
-
-
-                -----------------------------------------
-                -- ドラッグ機能の修正（パレット＆色相バー）
-                -----------------------------------------
+                R_Input.FocusLost:Connect(OnInputChanged)
+                G_Input.FocusLost:Connect(OnInputChanged)
+                B_Input.FocusLost:Connect(OnInputChanged)
                 
-                -- パレット (Color) 内での入力処理
-                local ColorDragging = false
+                -- テキスト変更時もリアルタイムで拾う場合
+                R_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
+                G_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
+                B_Input:GetPropertyChangedSignal("Text"):Connect(OnInputChanged)
+
+                -- パレット初期位置の同期計算
+                ColorH = 1 - (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
+                ColorS = (math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
+                ColorV = 1 - (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
                 
-                local function UpdateColorFromMouse(input)
-                    local xSize = Color.AbsoluteSize.X
-                    local ySize = Color.AbsoluteSize.Y
-                    if xSize > 0 and ySize > 0 then
-                        local xWeight = math.clamp((input.Position.X - Color.AbsolutePosition.X) / xSize, 0, 1)
-                        local yWeight = math.clamp((input.Position.Y - Color.AbsolutePosition.Y) / ySize, 0, 1)
-                        
-                        ColorSelection.Position = UDim2.new(xWeight, 0, yWeight, 0)
-                        ColorS = xWeight
-                        ColorV = 1 - yWeight
+                -- Color ドラッグ処理
+                local Dragging, DragInput, MousePos, FramePos = false
+
+                AddConnection(Color.InputBegan, function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                        Dragging = true
+                        MousePos = Input.Position
+                        FramePos = ColorSelection.Position
+        
+                        AddConnection(Input.Changed, function()
+                            if Input.UserInputState == Enum.UserInputState.End then
+                                Dragging = false
+                                FocusDrag = nil
+                            end
+                        end)
+                    end
+                end)
+
+                AddConnection(Color.InputChanged, function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch and not FocusDrag then
+                        DragInput = Input
+                        FocusDrag = DragInput
+                    end
+                end)
+                
+                AddConnection(UserInputService.InputChanged, function(Input)
+                    if Input == DragInput and Dragging and Input == FocusDrag then
+                        local ColorX = (math.clamp(DragInput.Position.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
+                        local ColorY = (math.clamp(Input.Position.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
+                        ColorSelection.Position = UDim2.new(ColorX, 0, ColorY, 0)
+                        ColorS = ColorX
+                        ColorV = 1 - ColorY
                         UpdateColorPicker()
                     end
-                end
-
-                AddConnection(Color.InputBegan, function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        ColorDragging = true
-                        UpdateColorFromMouse(input)
-                    end
                 end)
 
-                AddConnection(UserInputService.InputChanged, function(input)
-                    if ColorDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                        UpdateColorFromMouse(input)
+                -- Hue ドラッグ処理
+                local Dragging_1, DragInput_1, MousePos_1, FramePos_1 = false
+
+                AddConnection(Hue.InputBegan, function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                        Dragging_1 = true
+                        MousePos_1 = Input.Position
+                        FramePos_1 = HueSelection.Position
+        
+                        AddConnection(Input.Changed, function()
+                            if Input.UserInputState == Enum.UserInputState.End then
+                                Dragging_1 = false
+                                FocusDrag = nil
+                            end
+                        end)
                     end
                 end)
-
-                -- 色相バー (Hue) 内での入力処理
-                local HueDragging = false
-
-                local function UpdateHueFromMouse(input)
-                    local xSize = Hue.AbsoluteSize.X
-                    if xSize > 0 then
-                        local xWeight = math.clamp((input.Position.X - Hue.AbsolutePosition.X) / xSize, 0, 1)
-                        
-                        HueSelection.Position = UDim2.new(xWeight, 0, 0.5, 0)
-                        ColorH = 1 - xWeight
+                
+                AddConnection(Hue.InputChanged, function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch and not FocusDrag then
+                        DragInput_1 = Input
+                        FocusDrag = DragInput_1
+                    end
+                end)
+                
+                AddConnection(UserInputService.InputChanged, function(Input)
+                    if Input == DragInput_1 and Dragging_1 and DragInput_1 == FocusDrag then
+                        local HueY = (math.clamp(Input.Position.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
+                        HueSelection.Position = UDim2.new(0.5, 0, HueY, 0)
+                        ColorH = 1 - HueY
                         UpdateColorPicker()
                     end
-                end
-
-                AddConnection(Hue.InputBegan, function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        HueDragging = true
-                        UpdateHueFromMouse(input)
-                    end
                 end)
 
-                AddConnection(UserInputService.InputChanged, function(input)
-                    if HueDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                        UpdateHueFromMouse(input)
-                    end
-                end)
-
-                -- ドラッグ終了判定を共通で処理
-                AddConnection(UserInputService.InputEnded, function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        ColorDragging = false
-                        HueDragging = false
-                    end
-                end)
-
-
-                -----------------------------------------
-                -- 外部設定用メソッド群
-                -----------------------------------------
                 function Colorpicker:Set(Value)
-                    Colorpicker.Value = Value
-                    ColorH, ColorS, ColorV = Color3.toHSV(Colorpicker.Value)
-                    
+                    local h, s, v = Color3.toHSV(Value)
+                    ColorH, ColorS, ColorV = h, s, v
                     ColorSelection.Position = UDim2.new(ColorS, 0, 1 - ColorV, 0)
-                    HueSelection.Position = UDim2.new(1 - ColorH, 0, 0.5, 0)
-                    
-                    UpdateColorPicker()
+                    HueSelection.Position = UDim2.new(0.5, 0, 1 - ColorH, 0)
+                    UpdateColorPicker(Value)
                 end
 
                 Colorpicker:Set(Colorpicker.Value)
+                
                 if ColorpickerConfig.Flag then              
                     OrionLib.Flags[ColorpickerConfig.Flag] = Colorpicker
                 end
+                
                 return Colorpicker
             end
             return ElementFunction
